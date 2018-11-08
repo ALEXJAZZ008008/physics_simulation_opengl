@@ -6,39 +6,13 @@ import vector3d
 
 class Sphere(object):
     def __init__(self,
-                 size=0.5,
-                 indices=(
-                         (0, 1),
-                         (0, 3),
-                         (0, 4),
-                         (2, 1),
-                         (2, 3),
-                         (2, 7),
-                         (6, 3),
-                         (6, 4),
-                         (6, 7),
-                         (5, 1),
-                         (5, 4),
-                         (5, 7)
-                 ),
+                 size=30,
                  gravitational_acceleration=vector3d.Vector3D(0, -9.8, 0),
                  mass=1,
                  elasticity=0.8,
                  friction=0.2
                  ):
         self.size = size
-
-        self.vertices = (
-            (size, -size, -size),
-            (size, size, -size),
-            (-size, size, -size),
-            (-size, -size, -size),
-            (size, -size, size),
-            (size, size, size),
-            (-size, -size, size),
-            (-size, size, size)
-        )
-        self.indices = indices
 
         self.position = vector3d.Vector3D(random.uniform(size, size),
                                           random.uniform((size + size) * 0.5, size),
@@ -120,8 +94,8 @@ class Sphere(object):
     def draw(self):
         glPushMatrix()
 
-        #glTranslatef(self.position.x, self.position.y, self.position.z)
+        glTranslatef(self.position.x, self.position.y, self.position.z)
 
-        glutSolidSphere(15, 250, 250)
+        glutSolidSphere(self.size, self.size, self.size)
 
         glPopMatrix()

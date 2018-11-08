@@ -17,13 +17,14 @@ def draw():
 
     glFlush()
     glutSwapBuffers()
+    glutPostRedisplay()
 
 
 def main():
     glutInit()
     glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_ALPHA | GLUT_DEPTH)
 
-    glutInitWindowSize(1600, 900)
+    glutInitWindowSize(width, height)
     glutInitWindowPosition(0, 0)
     glutCreateWindow("python_simulation_opengl")
 
@@ -31,11 +32,13 @@ def main():
     glutIdleFunc(draw)
 
     glClearColor(0.0, 0.0, 0.0, 0.0)
-    glPointSize(5.0)
+    glPointSize(1.0)
     glMatrixMode(GL_PROJECTION)
     glLoadIdentity()
-    glOrtho(0.0, 550.0, 550.0, 0.0, -100.0, 100.0)
+    glOrtho(0.0, width, height, 0.0, -100.0, 100.0)
     glEnable(GL_DEPTH_TEST)
+
+    glTranslatef(500.0, 0.0, 0.0)
 
     glutMainLoop()
 

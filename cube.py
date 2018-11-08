@@ -3,7 +3,7 @@ from OpenGL.GL import *
 
 class Cube(object):
     def __init__(self,
-                 size=1,
+                 size=300,
                  indices=(
                          (0, 1),
                          (0, 3),
