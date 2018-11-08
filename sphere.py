@@ -1,5 +1,6 @@
 import random
 from OpenGL.GL import *
+from OpenGL.GLUT import *
 import vector3d
 
 
@@ -117,14 +118,10 @@ class Sphere(object):
         self.update_moving()
 
     def draw(self):
-        glBegin(GL_LINES)
+        glPushMatrix()
 
-        glTranslatef(self.position.x, self.position.y, self.position.z)
+        #glTranslatef(self.position.x, self.position.y, self.position.z)
 
-        for index in self.indices:
-            for vertex in index:
-                glVertex3fv(self.vertices[vertex])
+        glutSolidSphere(15, 250, 250)
 
-        glTranslatef(-self.position.x, -self.position.y, -self.position.z)
-
-        glEnd()
+        glPopMatrix()
