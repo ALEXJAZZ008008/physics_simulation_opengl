@@ -35,10 +35,12 @@ def main():
     glPointSize(1.0)
     glMatrixMode(GL_PROJECTION)
     glLoadIdentity()
-    glOrtho(0.0, width, height, 0.0, -100.0, 100.0)
+    glOrtho(0.0, width, height, 0.0, -1000.0, 1000.0)
     glEnable(GL_DEPTH_TEST)
 
-    glTranslatef(500.0, 0.0, 0.0)
+    glTranslatef(width / 2, height / 2, 0.0)
+    glRotatef(180.0, 0.0, 0.0, 1.0)
+    glRotatef(20.0, 1.0, 1.0, 0.0)
 
     glutMainLoop()
 

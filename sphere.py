@@ -6,21 +6,22 @@ import vector3d
 
 class Sphere(object):
     def __init__(self,
-                 size=30,
-                 gravitational_acceleration=vector3d.Vector3D(0, -9.8, 0),
+                 box_size=100,
+                 size=10,
+                 gravitational_acceleration=vector3d.Vector3D(0, -980, 0),
                  mass=1,
                  elasticity=0.8,
                  friction=0.2
                  ):
         self.size = size
 
-        self.position = vector3d.Vector3D(random.uniform(size, size),
-                                          random.uniform((size + size) * 0.5, size),
-                                          random.uniform(size, size))
+        self.position = vector3d.Vector3D(random.uniform(box_size, box_size),
+                                          random.uniform((box_size + box_size) * 0.5, box_size),
+                                          random.uniform(box_size, box_size))
 
-        self.velocity = vector3d.Vector3D(random.uniform(-size, size) * 2,
-                                          random.uniform(0, size) * 2,
-                                          random.uniform(-size, size) * 2)
+        self.velocity = vector3d.Vector3D(random.uniform(-box_size, box_size) * 2,
+                                          random.uniform(0, box_size) * 2,
+                                          random.uniform(-box_size, box_size) * 2)
 
         self.force = gravitational_acceleration
 
@@ -48,7 +49,7 @@ class Sphere(object):
         return 1 - ((self.friction + box.friction) * 0.5)
 
     def collision(self, box, previous_position):
-        if self.position.x < -box.size or self.position.x > box.size:
+        if self.position.x + (self.size * 0.5) < -box.size or self.position.x - (self.size * 0.5) > box.size:
             self.position = previous_position
 
             self.velocity.x *= -1
@@ -57,7 +58,7 @@ class Sphere(object):
             self.velocity.y *= self.friction_constant(box)
             self.velocity.z *= self.friction_constant(box)
 
-        if self.position.y < -box.size or self.position.y > box.size:
+        if self.position.y + (self.size * 0.5) < -box.size or self.position.y - (self.size * 0.5) > box.size:
             self.position = previous_position
 
             self.velocity.y *= -1
@@ -66,7 +67,7 @@ class Sphere(object):
             self.velocity.y *= self.elastic_constant(box)
             self.velocity.z *= self.friction_constant(box)
 
-        if self.position.z < -box.size or self.position.z > box.size:
+        if self.position.z + (self.size * 0.5) < -box.size or self.position.z - (self.size * 0.5) > box.size:
             self.position = previous_position
 
             self.velocity.z *= -1

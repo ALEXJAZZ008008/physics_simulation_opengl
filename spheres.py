@@ -3,10 +3,10 @@ import sphere
 
 
 class Spheres(object):
-    def __init__(self):
+    def __init__(self, number_of_spheres=10):
         self.spheres = []
 
-        for i in range(1):
+        for i in range(number_of_spheres):
             self.spheres.append(sphere.Sphere())
 
         self.moving = []
