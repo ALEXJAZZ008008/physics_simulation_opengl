@@ -1,33 +1,26 @@
-import time
 import sphere
 
 
 class Spheres(object):
-    def __init__(self, number_of_spheres=10):
-        self.spheres = []
+    def __init__(self, number_of_spheres, box_size, size, elasticity, friction):
+        self.balls = []
 
         for i in range(number_of_spheres):
-            self.spheres.append(sphere.Sphere())
+            self.balls.append(sphere.Sphere(box_size, size, elasticity, friction))
 
-        self.moving = []
+        for ball in self.balls:
+            ball.reset(box_size, self.balls)
 
-        for _ in self.spheres:
-            self.moving.append(True)
+    def update(self, delta_time, force, box):
+        for ball in self.balls:
+            ball.update(delta_time, force, box)
 
-        self.previous_time = time.time()
+        for ball in self.balls:
+            ball.balls_collision(self.balls)
 
-    def update(self, box):
-        current_time = time.time()
-        delta_time = current_time - self.previous_time
-
-        for i, ball in enumerate(self.spheres):
-            if self.moving[i]:
-                ball.update(delta_time, box)
-
-                self.moving[i] = ball.moving
-
-        self.previous_time = current_time
+        for ball in self.balls:
+            ball.check_moving(box.size, self.balls)
 
     def draw(self):
-        for ball in self.spheres:
+        for ball in self.balls:
             ball.draw()

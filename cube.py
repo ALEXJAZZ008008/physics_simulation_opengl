@@ -2,25 +2,7 @@ from OpenGL.GL import *
 
 
 class Cube(object):
-    def __init__(self,
-                 size=100,
-                 indices=(
-                         (0, 1),
-                         (0, 3),
-                         (0, 4),
-                         (2, 1),
-                         (2, 3),
-                         (2, 7),
-                         (6, 3),
-                         (6, 4),
-                         (6, 7),
-                         (5, 1),
-                         (5, 4),
-                         (5, 7)
-                 ),
-                 elasticity=0.8,
-                 friction=0.2
-                 ):
+    def __init__(self, size, indices, elasticity, friction):
         self.size = size
 
         self.vertices = (
@@ -42,6 +24,10 @@ class Cube(object):
         pass
 
     def draw(self):
+        glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, [1.0, 1.0, 1.0, 1.0])
+        glMaterialfv(GL_FRONT, GL_SPECULAR, [1, 1, 1, 1])
+        glMaterialfv(GL_FRONT, GL_SHININESS, [100.0])
+
         glBegin(GL_LINES)
 
         for index in self.indices:

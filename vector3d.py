@@ -1,12 +1,25 @@
 import math
-import vector2d
 
 
-class Vector3D(vector2d.Vector2D):
+class Vector3D(object):
     def __init__(self, x, y, z):
         self.x = x
         self.y = y
         self.z = z
 
-    def dot(self):
+    def magnitude(self):
         return math.sqrt((self.x * self.x) + (self.y * self.y) + (self.z * self.z))
+
+    def dot(self, other):
+        x = self.x - other.x
+        y = self.y - other.y
+        z = self.z - other.z
+
+        return math.sqrt((x * x) + (y * y) + (z * z))
+
+    def normalise(self):
+        magnitude = self.magnitude()
+
+        self.x /= magnitude
+        self.y /= magnitude
+        self.z /= magnitude
