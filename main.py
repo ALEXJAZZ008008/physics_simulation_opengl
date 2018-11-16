@@ -157,7 +157,7 @@ width = 1600
 keyboard_camera = camera.Camera()
 
 box = cube.Cube(1000, constants.cube_indices(), 0.8, 0.2)
-ball_list = spheres.Spheres(20, box.size, 100, 0.8, 0.2)
+ball_list = spheres.Spheres(20, 100, 10.0, box.size, 0.8, 0.2)
 
 delta_time = delta_time.DeltaTime()
 

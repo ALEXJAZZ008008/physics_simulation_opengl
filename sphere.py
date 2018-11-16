@@ -5,8 +5,9 @@ import vector3d
 
 
 class Sphere(object):
-    def __init__(self, box_size, size, elasticity, friction):
-        self.size = size
+    def __init__(self, elasticity, friction):
+        self.size = 10
+        self.mass = 1.0
 
         self.colour = vector3d.Vector3D(0.0, 0.0, 0.0)
 
@@ -16,6 +17,20 @@ class Sphere(object):
 
         self.elasticity = elasticity
         self.friction = friction
+
+    @staticmethod
+    def get_random_size(max_size):
+        return random.randint(10, max_size)
+
+    def reset_size(self, max_size):
+        self.size = self.get_random_size(max_size)
+
+    @staticmethod
+    def get_random_mass(max_mass):
+        return random.uniform(1.0, max_mass)
+
+    def reset_mass(self, max_mass):
+        self.mass = self.get_random_mass(max_mass)
 
     @staticmethod
     def get_random_colour():
@@ -29,7 +44,7 @@ class Sphere(object):
                                  random.uniform(0, box_size - self.size),
                                  random.uniform(-box_size + self.size, box_size - self.size))
 
-    def ball_collision(self, ball):
+    def ball_collision_detection(self, ball):
         return self.position.dot(ball.position) < self.size + ball.size
 
     def reset_position(self, box_size, balls):
@@ -42,19 +57,22 @@ class Sphere(object):
 
             for ball in balls:
                 if ball != self:
-                    if self.ball_collision(ball):
+                    if self.ball_collision_detection(ball):
                         colliding = True
 
     @staticmethod
     def get_random_velocity(box_size):
-        return vector3d.Vector3D(random.uniform(-box_size, box_size) * 10,
-                                 random.uniform(0, box_size) * 10,
-                                 random.uniform(-box_size, box_size) * 10)
+        return vector3d.Vector3D(random.uniform(-box_size, box_size) * 2.0,
+                                 0.0,
+                                 random.uniform(-box_size, box_size) * 2.0)
 
     def reset_velocity(self, box_size):
         self.velocity = self.get_random_velocity(box_size)
 
-    def reset(self, box_size, balls):
+    def reset(self, max_size, max_mass, box_size, balls):
+        self.reset_size(max_size)
+        self.reset_mass(max_mass)
+
         self.reset_colour()
         self.reset_position(box_size, balls)
         self.reset_velocity(box_size)
@@ -106,49 +124,51 @@ class Sphere(object):
     def ball_elastic_constant(self, ball):
         return (self.elasticity + ball.elasticity) * 0.5
 
-    def ball_friction_constant(self, ball):
-        return 1 - ((self.friction + ball.friction) * 0.5)
+    def ball_collision_response(self, ball):
+        if self.ball_collision_detection(ball):
+            normal = vector3d.Vector3D(self.position.x - ball.position.x,
+                                       self.position.y - ball.position.y,
+                                       self.position.z - ball.position.z)
 
-    def balls_collision(self, balls):
-        for ball in balls:
-            if ball != self:
-                if self.ball_collision(ball):
-                    normal = vector3d.Vector3D(self.position.x - ball.position.x,
-                                               self.position.y - ball.position.y,
-                                               self.position.z - ball.position.z)
+            normal.normalise()
 
-                    normal.normalise()
+            force_magnitude = ((self.velocity.dot(normal) - ball.velocity.dot(normal)) * 2.0) / (self.mass + ball.mass)
 
-                    a1 = self.velocity.dot(normal)
-                    a2 = ball.velocity.dot(normal)
+            self.velocity = vector3d.Vector3D(self.velocity.x - ((force_magnitude * ball.mass) * normal.x),
+                                              self.velocity.y - ((force_magnitude * ball.mass) * normal.y),
+                                              self.velocity.z - ((force_magnitude * ball.mass) * normal.z))
 
-                    optimized_p = 2.0 * (a1 - a2)
+            ball.velocity = vector3d.Vector3D(ball.velocity.x + ((force_magnitude * self.mass) * normal.x),
+                                              ball.velocity.y + ((force_magnitude * self.mass) * normal.y),
+                                              ball.velocity.z + ((force_magnitude * self.mass) * normal.z))
 
-                    new_self_velocity = vector3d.Vector3D(self.velocity.x - (optimized_p * normal.x),
-                                                          self.velocity.y - (optimized_p * normal.x),
-                                                          self.velocity.z - (optimized_p * normal.x))
+            self.velocity.x *= normal.x * self.ball_elastic_constant(ball)
+            self.velocity.y *= normal.y * self.ball_elastic_constant(ball)
+            self.velocity.z *= normal.z * self.ball_elastic_constant(ball)
 
-                    new_ball_velocity = vector3d.Vector3D(ball.velocity.x - (optimized_p * normal.x),
-                                                          ball.velocity.y - (optimized_p * normal.x),
-                                                          ball.velocity.z - (optimized_p * normal.x))
+            ball.velocity.x *= normal.x * ball.ball_elastic_constant(self)
+            ball.velocity.y *= normal.y * ball.ball_elastic_constant(self)
+            ball.velocity.z *= normal.z * ball.ball_elastic_constant(self)
 
-                    new_self_velocity.x *= self.ball_elastic_constant(ball)
-                    new_self_velocity.y *= self.ball_elastic_constant(ball)
-                    new_self_velocity.z *= self.ball_elastic_constant(ball)
+            self.position = self.previous_position
+            ball.position = ball.previous_position
 
-                    new_ball_velocity.x *= ball.ball_elastic_constant(self)
-                    new_ball_velocity.y *= ball.ball_elastic_constant(self)
-                    new_ball_velocity.z *= ball.ball_elastic_constant(self)
+            midpoint = vector3d.Vector3D((self.position.x - ball.position.x) * 0.1,
+                                         (self.position.y - ball.position.y) * 0.1,
+                                         (self.position.z - ball.position.z) * 0.1)
 
-                    self.velocity = new_self_velocity
-                    ball.velocity = new_ball_velocity
+            while self.ball_collision_detection(ball):
+                self.position.x += midpoint.x
+                self.position.y += midpoint.y
+                self.position.z += midpoint.z
 
-                    self.position = self.previous_position
-                    ball.position = ball.previous_position
+                ball.position.x -= midpoint.x
+                ball.position.y -= midpoint.y
+                ball.position.z -= midpoint.z
 
-    def check_moving(self, box_size, balls):
+    def check_moving(self, max_size, max_mass, box_size, balls):
         if self.velocity.magnitude() < 100:
-            self.reset(box_size, balls)
+            self.reset(max_size, max_mass, box_size, balls)
 
     def update(self, delta_time, force, box):
         self.previous_position = self.position

@@ -20,6 +20,11 @@ class Vector3D(object):
     def normalise(self):
         magnitude = self.magnitude()
 
-        self.x /= magnitude
-        self.y /= magnitude
-        self.z /= magnitude
+        if magnitude != 0:
+            self.x /= magnitude
+            self.y /= magnitude
+            self.z /= magnitude
+        else:
+            self.x = 0
+            self.y = 0
+            self.z = 0
