@@ -20,14 +20,14 @@ class Sphere(object):
 
     @staticmethod
     def get_random_size(max_size):
-        return random.randint(10, max_size)
+        return random.randint(50, max_size)
 
     def reset_size(self, max_size):
         self.size = self.get_random_size(max_size)
 
     @staticmethod
     def get_random_mass(max_mass):
-        return random.uniform(1.0, max_mass)
+        return random.uniform(0.5, max_mass)
 
     def reset_mass(self, max_mass):
         self.mass = self.get_random_mass(max_mass)
@@ -149,22 +149,6 @@ class Sphere(object):
             ball.velocity.x *= normal.x * ball.ball_elastic_constant(self)
             ball.velocity.y *= normal.y * ball.ball_elastic_constant(self)
             ball.velocity.z *= normal.z * ball.ball_elastic_constant(self)
-
-            self.position = self.previous_position
-            ball.position = ball.previous_position
-
-            midpoint = vector3d.Vector3D((self.position.x - ball.position.x) * 0.1,
-                                         (self.position.y - ball.position.y) * 0.1,
-                                         (self.position.z - ball.position.z) * 0.1)
-
-            while self.ball_collision_detection(ball):
-                self.position.x += midpoint.x
-                self.position.y += midpoint.y
-                self.position.z += midpoint.z
-
-                ball.position.x -= midpoint.x
-                ball.position.y -= midpoint.y
-                ball.position.z -= midpoint.z
 
     def check_moving(self, max_size, max_mass, box_size, balls):
         if self.velocity.magnitude() < 100:
